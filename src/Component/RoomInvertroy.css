@@ -1,0 +1,26 @@
+.inv td{
+    padding: 5px;
+ /* border: 1px solid black; */
+
+}
+.inv td{
+    font-weight: normal;
+}
+.inv tr:first-child{
+    border-bottom: 2px solid black;
+}
+.inv tr:nth-child(even) {
+    background-color: rgb(194, 194, 194);
+
+}
+
+.inv table button {
+    margin-left: 5px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+.inv a {
+    color: white;
+}

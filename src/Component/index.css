@@ -1,0 +1,32 @@
+/* @tailwind base; */
+@tailwind components;
+@tailwind utilities;
+
+
+.bg-gray-50 {
+    --tw-bg-opacity: 1;
+    background-color: #76b11d;
+}
+.w-64 {
+    width: 20%;
+}
+.px-3{
+    color: black;
+}
+.px-3:hover{
+    color: #000000;
+}
+.rounded{
+    border-radius: 0;
+}
+*::-webkit-scrollbar {
+    display: none;
+  }
+.sidebar button{
+    background-color: white;
+}
+.sidebar li{
+    border-radius: 10px;
+
+    background-color: white;
+}
