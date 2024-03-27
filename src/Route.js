@@ -183,7 +183,5 @@ function ProtectedRoute2({ children, data }) {
 function ProtectedRoute1({ children }) {
   if (!localStorage.getItem("user")) {
     return children;
-  } else {
-    return <Navigate to="/" />;
-  }
+  } else return <Navigate to="/" />;
 }
