@@ -7,7 +7,7 @@ import "react-phone-input-2/lib/bootstrap.css";
 import "./newboing.css";
 import axios from "axios";
 
-export function NewBooking({user1}) {
+export function NewBooking({ user1 }) {
   const user = localStorage.getItem("user");
   const g = JSON.parse(user);
   const [disabled, setDisabled] = useState(true);
@@ -17,7 +17,8 @@ export function NewBooking({user1}) {
   const [rooms, setRooms] = useState([]);
   const [data, setData] = useState({});
   const [phone, setPhone] = useState(0);
-  const [room, setRoom] = useState();
+  const [reg, setreg] = useState();
+  const [roomtype, setRoomtype] = useState([]);
 
   const [guests, setGuests] = useState([]);
   function handlerCheckIn(e) {
@@ -39,10 +40,16 @@ export function NewBooking({user1}) {
 
           const start = new Date(booking.formdate);
           const end = new Date(booking.todate);
-          if ((date >= start && date <= end) || (date1 >= start && date1 <= end)  
+          if (
+            (date >= start && date <= end) ||
+            (date1 >= start && date1 <= end)
           ) {
             availability = false;
-          }if((start >= date && start <= date1) || (end >= date && end <= date1)){
+          }
+          if (
+            (start >= date && start <= date1) ||
+            (end >= date && end <= date1)
+          ) {
             availability = false;
           }
         }
@@ -60,47 +67,37 @@ export function NewBooking({user1}) {
     setGuests((items) => [...items, {}]);
   }
   const updateData = (e) => {
-    if(e.target.name == 'adultCharges'){
-      setData((s) => ({ ...s, [e.target.name]: e.target.checked }));
-      setData((s) => ({ ...s, ["price"]: s['price'] + room[0].adult_charge }));
-      return ;
+    if (e.target.name === "adultNo") {
+      setData((s) => ({ ...s, [e.target.name]: e.target.value }));
+      setData((s) => ({
+        ...s,
+        ["room_number"]: rooms.slice(0, Math.ceil(e.target.value / 4)),
+      }));
+      return;
     }
     setData((s) => ({ ...s, [e.target.name]: e.target.value }));
   };
-  const updateData1 = (e) => {
-    setData((s) => ({
-      ...s,
-      ["price"]:( Number(room[0].rate_type_name) + room[0][e.target.value]) ,
-    }));
-    setData((s) => ({
-      ...s,
-      ["verifiedby"]: g.username,
-    }));
-  };
+
   const updateGuest = (e, i) => {
     const newguests = [...guests];
     newguests[i][e.target.name] = e.target.value;
     setGuests(newguests);
   };
   async function handlerChange(value) {
+    setData((s) => ({
+      ...s,
+      ["verifiedby"]: g.username,
+    }));
     setData((s) => ({ ...s, ["userid"]: g._id }));
     const i = rooms.filter((roomg) => {
       if (roomg._id === value) {
         return roomg;
       }
     });
-    setRoom(i);
-    setData((s) => ({ ...s, ["price"] :  Number(i[0].rate_type_name) }));
+    setData((s) => ({ ...s, ["price"]: Number(i[0].rate_type_name) }));
   }
   async function handlerSubmit(e) {
     e.preventDefault();
-    let f = data.meal_plan;
-    console.log(data.price);
-    setData((s) => ({
-      ...s,
-      ["price"]: s['price'] + Number(room[0].rate_type_name) + room[0][f]
-    }));
-
     const fullData = { ...data, guest: guests };
     console.log(fullData);
     const curUser = await axios.post(
@@ -110,10 +107,28 @@ export function NewBooking({user1}) {
     console.log(curUser);
     window.location.href = "/";
   }
+  async function roomtypes() {
+    const roomtype = await axios.get("https://hotelwebsitevishal.onrender.com/Roomtype");
+    const regno = await axios.get(
+      "https://hotelwebsitevishal.onrender.com/book/allBookingslength"
+    );
+
+    console.log(regno.data);
+    setreg(regno.data.booking);
+    setRoomtype(roomtype.data);
+    setData((s) => ({
+      ...s,
+      ["invoice_No"]: `CMIV-${new Date().getFullYear()}/`,
+    }));
+    setData((s) => ({ ...s, ["registrationNo"]: reg }));
+  }
+  useEffect(() => {
+    roomtypes();
+  }, []);
 
   return (
     <div style={{ display: "flex" }}>
-              <Sidebark user={user1}/>
+      <Sidebark user={user1} />
 
       <div className="d-flex" style={{ position: "relative", left: "20%" }}>
         <div>
@@ -132,17 +147,34 @@ export function NewBooking({user1}) {
             <p>
               <label for="">Reg No</label>
               <br />
-              <input type="text" required name="registrationNo" onChange={updateData} />
+              <input
+                type="text"
+                required
+                value={reg}
+                name="registrationNo"
+                onChange={updateData}
+              />
             </p>
             <p>
               <label for="">Invoice No.</label>
               <br />
-              <input type="number" required name="invoice_No" onChange={updateData} />
+              <input
+                type="text"
+                required
+                name="invoice_No"
+                value={data.invoice_No}
+                onChange={updateData}
+              />
             </p>
             <p>
               <label for="">Log No.</label>
               <br />
-              <input type="number" required name="log_No" onChange={updateData} />
+              <input
+                type="number"
+                required
+                name="log_No"
+                onChange={updateData}
+              />
             </p>
             <p>
               <label for="">check in</label>
@@ -178,35 +210,46 @@ export function NewBooking({user1}) {
                   handlerCheckOut(), updateData(e);
                 }}
               >
-                <option value=""  selected>
+                <option value="" selected>
                   choose...
                 </option>
-                <option value="Standard">Standard Room</option>
+                {Array.from(roomtype).map((room) => {
+                  return <option value={room.name}>{room.name}</option>;
+                })}
               </select>
             </p>
             <p>
-              <label for="">Meal Plan</label>
-              <br />
-              <select
-                name="meal_plan"
-                required
-                onChange={(e) => {
-                  updateData(e);
-                  updateData1(e);
-                }}
-              >
-                <option value="" disabled selected>
-                  choose...
-                </option>
-                <option value="room_only">Room Only</option>
-                <option value="breakfast_price">Bed & BreakFast</option>
-                <option value="lunch_price">Lunch Only</option>
-                <option value="dinner_price">Dinner Only </option>
-                <option value="breakfast_lunch">Breakfast and Lunch</option>
-                <option value="lunch_dinner">Lunch and Dinner</option>
-                <option value="dinner_breakfast">Dinner Breakfast</option>
-                <option value="full_board">Full Board</option>
-              </select>
+              <label for="">No of Pax</label>
+              <div style={{ display: "flex", width: "100%" }}>
+                <input
+                  type="text"
+                  required
+                  style={{ width: "45%" }}
+                  name="adultNo"
+                  value={data.adultNo}
+                  onChange={(e) => (
+                    updateData(e),
+                    Math.ceil(e.target.value / 4) > rooms.length
+                      ? setData((s) => ({ ...s, [e.target.name]: "" }))
+                      : ""
+                  )}
+                  placeholder="no of adult"
+                />
+                <input
+                  type="text"
+                  style={{ width: "45%" }}
+                  name="children"
+                  required
+                  onChange={updateData}
+                  placeholder="no of child"
+                />
+                <input
+                  type="checkbox"
+                  name="adultCharges"
+                  onChange={updateData}
+                  id=""
+                />
+              </div>
             </p>
             <p>
               <label for="">Room Number</label>
@@ -220,6 +263,29 @@ export function NewBooking({user1}) {
                 {rooms.map((room) => {
                   return <option value={room._id}>{room.roomNo}</option>;
                 })}
+              </select>
+            </p>
+            <p>
+              <label for="">Meal Plan</label>
+              <br />
+              <select
+                name="meal_plan"
+                required
+                onChange={(e) => {
+                  updateData(e);
+                }}
+              >
+                <option value="" disabled selected>
+                  choose...
+                </option>
+                <option value="room_only">Room Only</option>
+                <option value="breakfast_price">Bed & BreakFast</option>
+                <option value="lunch_price">Lunch Only</option>
+                <option value="dinner_price">Dinner Only </option>
+                <option value="breakfast_lunch">Breakfast and Lunch</option>
+                <option value="lunch_dinner">Lunch and Dinner</option>
+                <option value="dinner_breakfast">Dinner Breakfast</option>
+                <option value="full_board">Full Board</option>
               </select>
             </p>
             <p>
@@ -302,7 +368,12 @@ export function NewBooking({user1}) {
             </p>
             <p>
               <label for="">Full Name</label>
-              <input type="text" required name="full_name" onChange={updateData} />
+              <input
+                type="text"
+                required
+                name="full_name"
+                onChange={updateData}
+              />
             </p>
             <p>
               <label for="">Email</label>
@@ -357,31 +428,14 @@ export function NewBooking({user1}) {
             </p>
             <p>
               <label for="">Profession</label>
-              <input type="text" name="proffesion" required onChange={updateData} />
+              <input
+                type="text"
+                name="proffesion"
+                required
+                onChange={updateData}
+              />
             </p>
-            <p>
-              <label for="">No of Pax</label>
-              <div style={{ display: "flex", width: "100%" }}>
-                <input
-                  type="text"
-                  required
-                  style={{ width: "45%" }}
-                  name="adultNo"
-                  value={data.adultNo}
-                  onChange={(e)=>(updateData(e),(e.target.value>4?setData((s) => ({ ...s, [e.target.name]: 4 })):""))}
-                  placeholder="no of adult"
-                />
-                <input
-                  type="text"
-                  style={{ width: "45%" }}
-                  name="children"
-                  required
-                  onChange={updateData}
-                  placeholder="no of child"
-                />
-                <input type="checkbox" name="adultCharges" onChange={updateData} id="" />
-              </div>
-            </p>
+
             <p>
               <label for="">Group</label>
               <div style={{ display: "flex", width: "100%" }}>
@@ -396,7 +450,7 @@ export function NewBooking({user1}) {
               {/* <!-- <label for="">Upload Id</label>
               <input type="file" name=""  style="border: 1px solid black" /> --> */}
             </p>
-            
+
             <p>
               <button onClick={(e) => handleraddGuest(e)}>
                 Add More Guest
@@ -454,8 +508,7 @@ export function NewBooking({user1}) {
                 </option>
                 <option value="cash">Cash</option>
                 <option value="credit">Credit</option>
-                <option value="onhold" >Onhold</option>
-
+                <option value="onhold">Onhold</option>
               </select>
             </p>
             <p>
@@ -465,7 +518,12 @@ export function NewBooking({user1}) {
             <p>
               <label for="">Verified By</label>
 
-              <input type="text" required value={g.username} onChange={updateData} />
+              <input
+                type="text"
+                required
+                value={g.username}
+                onChange={updateData}
+              />
             </p>
             <div>
               <button>Save Data</button>

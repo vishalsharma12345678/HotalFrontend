@@ -2,7 +2,7 @@ import { Sidebark } from "./Sidebar";
 import "./RoomInvertroy.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
-export function RoomLocked() {
+export function RoomLocked({ user }) {
   const [rooms, setRooms] = useState([]);
   const [isFetching, setFetching] = useState(false);
   async function lockroom(id) {
@@ -16,7 +16,9 @@ export function RoomLocked() {
   }
   async function fetchData() {
     setFetching(true);
-    let roomsdata = await fetch("https://hotelwebsitevishal.onrender.com/room/lockRoom");
+    let roomsdata = await fetch(
+      "https://hotelwebsitevishal.onrender.com/room/lockRoom"
+    );
     let data = await roomsdata.json();
     setRooms((s) => data);
     setFetching(false);
@@ -26,7 +28,7 @@ export function RoomLocked() {
   }, []);
   return (
     <div style={{ display: "flex" }}>
-      <Sidebark user={user}/>
+      <Sidebark user={user} />
       <div className="rooms inv" style={{ position: "relative", left: "20%" }}>
         <h1>Rooms Inventory</h1>
         <table style={{ width: "100%" }}>
@@ -56,7 +58,9 @@ export function RoomLocked() {
                     <td>{room.Room_amneities}</td>
                     <td>
                       {room.Room_Status === "Locked" ? (
-                        <button onClick={() => lockroom(room._id)}>Unlock</button>
+                        <button onClick={() => lockroom(room._id)}>
+                          Unlock
+                        </button>
                       ) : null}
                     </td>
                   </tr>

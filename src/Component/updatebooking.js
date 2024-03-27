@@ -6,13 +6,13 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/bootstrap.css";
 import "./newboing.css";
 import Select from "react-select";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-export function UpdateBooking({user1}) {
+export function UpdateBooking({ user1 }) {
   const user = localStorage.getItem("user");
   const g = JSON.parse(user);
   let { id } = useParams();
-  let navigate = useNavigate()
+  let navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
   const [wpps, setWpps] = useState(false);
   const [check_in, setCheck_in] = useState();
@@ -27,7 +27,9 @@ export function UpdateBooking({user1}) {
     setCheck_in((a) => e.target.value);
   }
   async function handlerCheckOut(e) {
-    let rooms = await fetch("https://hotelwebsitevishal.onrender.com/room/getallroomsAvalible");
+    let rooms = await fetch(
+      "https://hotelwebsitevishal.onrender.com/room/getallroomsAvalible"
+    );
     let data = await rooms.json();
     console.log(data);
     console.log(check_in + " " + check_out);
@@ -42,10 +44,16 @@ export function UpdateBooking({user1}) {
 
           const start = new Date(booking.formdate);
           const end = new Date(booking.todate);
-          if ((date >= start && date <= end) || (date1 >= start && date1 <= end)  
+          if (
+            (date >= start && date <= end) ||
+            (date1 >= start && date1 <= end)
           ) {
             availability = false;
-          }if((start >= date && start <= date1) || (end >= date && end <= date1)){
+          }
+          if (
+            (start >= date && start <= date1) ||
+            (end >= date && end <= date1)
+          ) {
             availability = false;
           }
         }
@@ -63,22 +71,23 @@ export function UpdateBooking({user1}) {
     setGuests((items) => [...items, {}]);
   }
   const updateData = (e) => {
-    if(e.target.name == 'adultCharges'){
+    if (e.target.name === "adultNo") {
+      setData((s) => ({ ...s, [e.target.name]: e.target.value }));
+      setData((s) => ({
+        ...s,
+        ["room_number"]: rooms.slice(0, Math.ceil(e.target.value / 4)),
+      }));
+      return;
+    } else if (e.target.name === "adultCharges") {
       setData((s) => ({ ...s, [e.target.name]: e.target.checked }));
-      setData((s) => ({ ...s, ["price"]: s['price'] + room[0].adult_charge }));
-      return ;
+      return;
     }
     setData((s) => ({ ...s, [e.target.name]: e.target.value }));
-    setData((s) => ({
-      ...s,
-      ["verifiedby"]: g.username,
-    }));
-
   };
   const updateData1 = (e) => {
     setData((s) => ({
       ...s,
-      ["price"]: Number(room[0].rate_type_name) + (room[0][e.target.value]) ,
+      ["price"]: Number(room[0].rate_type_name) + room[0][e.target.value],
     }));
   };
   const updateGuest = (e, i) => {
@@ -87,52 +96,48 @@ export function UpdateBooking({user1}) {
     setGuests(newguests);
   };
   async function handlerChange(value) {
+    setData((s) => ({
+      ...s,
+      ["verifiedby"]: g.username,
+    }));
     setData((s) => ({ ...s, ["userid"]: g._id }));
     const i = rooms.filter((roomg) => {
       if (roomg._id === value) {
         return roomg;
       }
     });
-
-    setRoom(i);
     setData((s) => ({ ...s, ["price"]: Number(i[0].rate_type_name) }));
   }
   async function handlerSubmit(e) {
     e.preventDefault();
-    let f = data.meal_plan;
-    console.log(data.price);
-    setData((s) => ({
-      ...s,
-      ["price"]: Number(room[0].rate_type_name) + room[0][f]
-    }));
-
-    const fullData = { ...data, guest: guests };
+    const fullData = { ...data };
     console.log(fullData);
     const curUser = await axios.post(
       "https://hotelwebsitevishal.onrender.com/book/updatebookingdetails",
       fullData
     );
     // console.log(curUser);
-    navigate('/bookedroom')
+    navigate("/bookedroom");
     // window.location.href = "/";
   }
-  async function fetchdata(){
-    const booking = await axios.get(`https://hotelwebsitevishal.onrender.com/book/allbooking/${id}`)
-    let book = booking.data
-    const {moreperson,...rest} = book;
-    setData(rest)
-    setGuests(moreperson)
-    setRoom([rest.room_number])
-
+  async function fetchdata() {
+    const booking = await axios.get(
+      `https://hotelwebsitevishal.onrender.com/book/allbooking/${id}`
+    );
+    let book = booking.data;
+    const { moreperson, ...rest } = book;
+    setData(rest);
+    setGuests(moreperson);
+    setRoom([rest.room_number]);
   }
 
   useEffect(() => {
-    fetchdata()
-  }, [])
-  
+    fetchdata();
+  }, []);
+
   return (
     <div style={{ display: "flex" }}>
-        <Sidebark user={user1}/>
+      <Sidebark user={user1} />
 
       <div className="d-flex" style={{ position: "relative", left: "20%" }}>
         <div>
@@ -144,7 +149,7 @@ export function UpdateBooking({user1}) {
               flexWrap: "wrap",
               padding: "3rem",
               gap: "10px",
-              alignItems:"center"
+              alignItems: "center",
             }}
           >
             <h1 style={{ width: "100%" }}>UPDATE BOOKING</h1>
@@ -152,17 +157,35 @@ export function UpdateBooking({user1}) {
             <p>
               <label htmlFor="">Reg No</label>
               <br />
-              <input type="text" value={data.registrationNo} required name="registrationNo" onChange={updateData} />
+              <input
+                type="text"
+                value={data.registrationNo}
+                required
+                name="registrationNo"
+                onChange={updateData}
+              />
             </p>
             <p>
               <label htmlFor="">Invoice No.</label>
               <br />
-              <input type="number" value={data.invoice_No} required name="invoice_No" onChange={updateData} />
+              <input
+                type="number"
+                value={data.invoice_No}
+                required
+                name="invoice_No"
+                onChange={updateData}
+              />
             </p>
             <p>
               <label htmlFor="">Log No.</label>
               <br />
-              <input type="number" value={data.log_No} required name="log_No" onChange={updateData} />
+              <input
+                type="number"
+                value={data.log_No}
+                required
+                name="log_No"
+                onChange={updateData}
+              />
             </p>
             <p>
               <label htmlFor="">check in</label>
@@ -200,10 +223,68 @@ export function UpdateBooking({user1}) {
                   handlerCheckOut(), updateData(e);
                 }}
               >
-                <option value="" >
-                  choose...
+                <option value="">choose...</option>
+                <option value="Standard" selected>
+                  Standard Room
                 </option>
-                <option value="Standard" selected>Standard Room</option>
+              </select>
+            </p>
+            <p>
+              <label htmlFor="">No of Pax</label>
+              <div style={{ display: "flex", width: "100%" }}>
+                <input
+                  type="text"
+                  required
+                  style={{ width: "40%" }}
+                  name="adultNo"
+                  value={data.adultNo}
+                  onChange={(e) => (
+                    updateData(e),
+                    Math.ceil(e.target.value / 4) > rooms.length
+                      ? setData((s) => ({ ...s, [e.target.name]: "" }))
+                      : ""
+                  )}
+                  placeholder="no of adult"
+                />
+                <input
+                  type="text"
+                  style={{ width: "40%" }}
+                  name="children"
+                  required
+                  value={data.children}
+                  onChange={updateData}
+                  placeholder="no of child"
+                />
+                <input
+                  type="checkbox"
+                  name="adultCharges"
+                  checked={data.adultCharges}
+                  onChange={updateData}
+                  id=""
+                />
+              </div>
+            </p>
+            <p>
+              <label htmlFor="">Room Number</label>
+              <br />
+              <select
+                name="room_number"
+                onChange={(e) => (updateData(e), handlerChange(e.target.value))}
+              >
+                <option value="">choose...</option>
+                {rooms.length === 0
+                  ? // <option selected>{room._id}</option>
+                    ""
+                  : rooms.map((room) => {
+                      return (
+                        <option
+                          value={room._id}
+                          selected={data.room_number === room._id}
+                        >
+                          {room.roomNo}
+                        </option>
+                      );
+                    })}
               </select>
             </p>
             <p>
@@ -214,38 +295,59 @@ export function UpdateBooking({user1}) {
                 required
                 onChange={(e) => {
                   updateData(e);
-                  updateData1(e);
                 }}
               >
-                <option value="" disabled >
+                <option value="" disabled>
                   choose...
                 </option>
-                <option value="room_only" selected={data.meal_plan === 'room_only'}>Room Only</option>
-                <option value="breakfast_price" selected={data.meal_plan === 'breakfast_price'}>Bed & BreakFast</option>
-                <option value="lunch_price" selected={data.meal_plan === 'lunch_price'}>Lunch Only</option>
-                <option value="dinner_price" selected={data.meal_plan === 'dinner_price'}>Dinner Only </option>
-                <option value="breakfast_lunch" selected={data.meal_plan === 'breakfast_lunch'}>Breakfast and Lunch</option>
-                <option value="lunch_dinner" selected={data.meal_plan === 'lunch_dinner'}>Lunch and Dinner</option>
-                <option value="dinner_breakfast" selected={data.meal_plan === 'dinner_breakfast'}>Dinner Breakfast</option>
-                <option value="full_board" selected={data.meal_plan === 'full_board'}>Full Board</option>
-              </select>
-            </p>
-            <p>
-              <label htmlFor="">Room Number</label>
-              <br />
-              <select
-                name="room_number"
-                
-                onChange={(e) => (updateData(e), handlerChange(e.target.value))}
-              >
-                <option value="">choose...</option>
-                {rooms.length === 0 ? (
-                  // <option selected>{room._id}</option> 
-                  ""
-                                  
-                )  : (rooms.map((room) => {
-                  return <option value={room._id} selected={data.room_number === room._id}>{room.roomNo}</option>;
-                })) }
+                <option
+                  value="room_only"
+                  selected={data.meal_plan === "room_only"}
+                >
+                  Room Only
+                </option>
+                <option
+                  value="breakfast_price"
+                  selected={data.meal_plan === "breakfast_price"}
+                >
+                  Bed & BreakFast
+                </option>
+                <option
+                  value="lunch_price"
+                  selected={data.meal_plan === "lunch_price"}
+                >
+                  Lunch Only
+                </option>
+                <option
+                  value="dinner_price"
+                  selected={data.meal_plan === "dinner_price"}
+                >
+                  Dinner Only{" "}
+                </option>
+                <option
+                  value="breakfast_lunch"
+                  selected={data.meal_plan === "breakfast_lunch"}
+                >
+                  Breakfast and Lunch
+                </option>
+                <option
+                  value="lunch_dinner"
+                  selected={data.meal_plan === "lunch_dinner"}
+                >
+                  Lunch and Dinner
+                </option>
+                <option
+                  value="dinner_breakfast"
+                  selected={data.meal_plan === "dinner_breakfast"}
+                >
+                  Dinner Breakfast
+                </option>
+                <option
+                  value="full_board"
+                  selected={data.meal_plan === "full_board"}
+                >
+                  Full Board
+                </option>
               </select>
             </p>
             <p>
@@ -255,9 +357,18 @@ export function UpdateBooking({user1}) {
                 <option value="" disabled selected>
                   choose...
                 </option>
-                <option value="direct booking" selected={data.guest_basis ==="direct booking"}>Direct booking</option>
-                <option value="fit" selected={data.guest_basis ==="fit"}>FIT</option>
-                <option value="OTA" selected={data.guest_basis ==="OTA"}>OTA</option>
+                <option
+                  value="direct booking"
+                  selected={data.guest_basis === "direct booking"}
+                >
+                  Direct booking
+                </option>
+                <option value="fit" selected={data.guest_basis === "fit"}>
+                  FIT
+                </option>
+                <option value="OTA" selected={data.guest_basis === "OTA"}>
+                  OTA
+                </option>
               </select>
             </p>
             <p>
@@ -274,9 +385,21 @@ export function UpdateBooking({user1}) {
                 <option value="" disabled selected>
                   choose...
                 </option>
-                <option value="local"  selected={data.guest_type === 'local'}>Local</option>
-                <option value="work_permit" selected={data.guest_type === 'work_permit'}>Work Permit</option>
-                <option value="tourist" selected={data.guest_type === 'tourist'}>Tourist</option>
+                <option value="local" selected={data.guest_type === "local"}>
+                  Local
+                </option>
+                <option
+                  value="work_permit"
+                  selected={data.guest_type === "work_permit"}
+                >
+                  Work Permit
+                </option>
+                <option
+                  value="tourist"
+                  selected={data.guest_type === "tourist"}
+                >
+                  Tourist
+                </option>
               </select>
             </p>
             <div style={{ width: "32.33%" }}>
@@ -297,10 +420,13 @@ export function UpdateBooking({user1}) {
                   name="bill_to"
                   value="customer"
                   required
-                  checked={data.bill_to === 'customer'}
+                  checked={data.bill_to === "customer"}
                   onChange={(e) => {
                     setDisabled(true);
                     updateData(e);
+                    data.bill_to !== "company" || !disabled
+                      ? setData((s) => ({ ...s, ["company_name"]: "" }))
+                      : "";
                   }}
                 />
                 <label htmlFor="customer">Customer</label>
@@ -308,7 +434,7 @@ export function UpdateBooking({user1}) {
                   type="radio"
                   name="bill_to"
                   required
-                  checked={data.bill_to === 'company'}
+                  checked={data.bill_to === "company"}
                   onChange={(e) => {
                     setDisabled(false);
                     updateData(e);
@@ -325,17 +451,31 @@ export function UpdateBooking({user1}) {
                 required
                 name="company_name"
                 value={data.company_name}
-                disabled={data.bill_to !== 'company' || !disabled?true:false}
-                onChange={updateData}
+                disabled={data.bill_to !== "company" || disabled ? true : false}
+                onChange={(e) => {
+                  updateData(e);
+                }}
               />
             </p>
             <p>
               <label htmlFor="">Full Name</label>
-              <input type="text" required name="full_name" value={data.full_name} onChange={updateData} />
+              <input
+                type="text"
+                required
+                name="full_name"
+                value={data.full_name}
+                onChange={updateData}
+              />
             </p>
             <p>
               <label htmlFor="">Email</label>
-              <input type="text" required name="email" value={data.email} onChange={updateData} />
+              <input
+                type="text"
+                required
+                name="email"
+                value={data.email}
+                onChange={updateData}
+              />
             </p>
             {/* <p>
               <label htmlFor="">Mobile number</label>
@@ -356,9 +496,8 @@ export function UpdateBooking({user1}) {
               <input
                 type="text"
                 name="wp_nd"
-                disabled={data.wp_nd !== undefined?false:true}
+                disabled={data.wp_nd !== undefined ? false : true}
                 value={data.wp_nd}
-
                 onChange={updateData}
               />
             </p>
@@ -366,7 +505,7 @@ export function UpdateBooking({user1}) {
               <label htmlFor="">Passport</label>
               <input
                 type="text"
-                disabled={data.passport_number !== undefined?false:true}
+                disabled={data.passport_number !== undefined ? false : true}
                 value={data.passport_number}
                 name="passport_number"
                 onChange={updateData}
@@ -375,60 +514,58 @@ export function UpdateBooking({user1}) {
 
             <p>
               <label htmlFor="">Natinality</label>
-              <select name="nationality" defaultValue={data.nationality} required onChange={updateData}>
-                
-                <Opions/>
-                <option value={data.nationality} selected>{data.nationality}</option>
+              <select
+                name="nationality"
+                defaultValue={data.nationality}
+                required
+                onChange={updateData}
+              >
+                <Opions />
+                <option value={data.nationality} selected>
+                  {data.nationality}
+                </option>
               </select>
-
             </p>
             <p>
               <label htmlFor="">Country of Residence</label>
               <select name="country_residence" required onChange={updateData}>
-              <option value={data.country_residence} selected>{data.country_residence}</option>
+                <option value={data.country_residence} selected>
+                  {data.country_residence}
+                </option>
 
                 <Opions />
               </select>
             </p>
             <p>
               <label htmlFor="">D.O.B</label>
-              <input type="date" name="dob" value={data.dob} required onChange={updateData} />
+              <input
+                type="date"
+                name="dob"
+                value={data.dob}
+                required
+                onChange={updateData}
+              />
             </p>
             <p>
               <label htmlFor="">Profession</label>
-              <input type="text" name="proffesion" value={data.proffesion} required onChange={updateData} />
-            </p>
-            <p>
-              <label htmlFor="">No of Pax</label>
-              <div style={{ display: "flex", width: "100%" }}>
-                <input
-                  type="text"
-                  required
-                  style={{ width: "40%" }}
-                  name="adultNo"
-                  value={data.adultNo}
-                  onChange={(e)=>(updateData(e),(e.target.value>4?setData((s) => ({ ...s, [e.target.name]: 4 })):""))}
-                  placeholder="no of adult"
-                />
-                <input
-                  type="text"
-                  style={{ width: "40%" }}
-                  name="children"
-                  required
-                  value={data.children}
-                  onChange={updateData}
-                  placeholder="no of child"
-                />
-                <input type="checkbox" name="adultCharges" checked={data.adultCharges} onChange={updateData} id="" />
-
-              </div>
+              <input
+                type="text"
+                name="proffesion"
+                value={data.proffesion}
+                required
+                onChange={updateData}
+              />
             </p>
             <p>
               <label htmlFor="">Group</label>
               <div style={{ display: "flex", width: "100%" }}>
                 <select name="group" required onChange={updateData}>
-                  <option value="no" selected={data.group === "no"}>no</option>
-                  <option value="yes" selected={data.group === "yes"}>yes</option>
+                  <option value="no" selected={data.group === "no"}>
+                    no
+                  </option>
+                  <option value="yes" selected={data.group === "yes"}>
+                    yes
+                  </option>
                 </select>
               </div>
             </p>
@@ -441,7 +578,7 @@ export function UpdateBooking({user1}) {
                 Add More Guest
               </button>
             </p>
-            {guests.map((guest, i) => {
+            {/* {guests.map((guest, i) => {
               return (
                 <div
                   style={{
@@ -491,7 +628,7 @@ export function UpdateBooking({user1}) {
                   <a href="">Remove</a>
                 </div>
               );
-            })}
+            })} */}
 
             <p>
               <label htmlFor="">Payment Type</label>
@@ -499,19 +636,42 @@ export function UpdateBooking({user1}) {
                 <option value="" selected disabled>
                   Payment Type
                 </option>
-                <option value="cash" selected={data.payment_type === "cash"}>Cash</option>
-                <option value="credit" selected={data.payment_type === "credit"}>Credit</option>
-                <option value="onhold" selected={data.payment_type === "onhold"}>Onhold</option>
+                <option value="cash" selected={data.payment_type === "cash"}>
+                  Cash
+                </option>
+                <option
+                  value="credit"
+                  selected={data.payment_type === "credit"}
+                >
+                  Credit
+                </option>
+                <option
+                  value="onhold"
+                  selected={data.payment_type === "onhold"}
+                >
+                  Onhold
+                </option>
               </select>
             </p>
             <p>
               <label htmlFor="">Remark</label>
-              <input type="text" name="remark" value={data.remark} required onChange={updateData} />
+              <input
+                type="text"
+                name="remark"
+                value={data.remark}
+                required
+                onChange={updateData}
+              />
             </p>
             <p>
               <label htmlFor="">Verified By</label>
 
-              <input type="text" required value={data.verifiedby} onChange={updateData} />
+              <input
+                type="text"
+                required
+                value={data.verifiedby}
+                onChange={updateData}
+              />
             </p>
             <div>
               <button>Save Data</button>

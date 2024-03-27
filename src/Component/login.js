@@ -6,7 +6,6 @@ import axios from "axios";
 export function Login() {
   const navigate = useNavigate();
 
-
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   async function handleLogin(e) {
@@ -15,11 +14,14 @@ export function Login() {
       username: username,
       password: password,
     };
-    const curUser = await axios.post("https://hotelwebsitevishal.onrender.com/login/getlogin",user);
+    const curUser = await axios.post(
+      "https://hotelwebsitevishal.onrender.com/login/getlogin",
+      user
+    );
     console.log(curUser.data);
 
-    localStorage.setItem('user',JSON.stringify(curUser.data))
-    window.location.href= '/'
+    localStorage.setItem("user", JSON.stringify(curUser.data));
+    window.location.href = "/";
   }
   return (
     <div className="main">
@@ -29,7 +31,7 @@ export function Login() {
         </div>
         <div>
           <h1 style={{ fontSize: "2rem" }}>Sign In</h1>
-          <form onSubmit={handleLogin} >
+          <form onSubmit={handleLogin}>
             <p>
               <label for="">Username</label>
               <input

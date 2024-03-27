@@ -15,9 +15,9 @@ export function Upcoming({user}){
           <div className="rooms book" style={{ position: "relative", left: "20%" }}>
             <h1>Room Booking Status</h1>
             <div style={{display:'flex',width:'100%',textAlign:'center'}} className="changer">
-              <div style={{width:"33.33%"}} className={`${5 === SelectedId ? "active" : ""}`} onClick={()=>setSelectedId(5)}>Last</div>
-              <div style={{width:'33.33%'}} className={`${6 === SelectedId ? "active" : ""}`} onClick={()=>setSelectedId(6)}>OnGoing</div>
-              <div style={{width:'33.33%'}} className={`${7 === SelectedId ? "active" : ""}`} onClick={()=>setSelectedId(7)}>Upcoming</div>
+              <div style={{width:"33.33%",padding:'10px'}} className={`${5 === SelectedId ? "active" : ""}`} onClick={()=>setSelectedId(5)}>Last</div>
+              <div style={{width:'33.33%',padding:'10px'}} className={`${6 === SelectedId ? "active" : ""}`} onClick={()=>setSelectedId(6)}>OnGoing</div>
+              <div style={{width:'33.33%',padding:'10px'}} className={`${7 === SelectedId ? "active" : ""}`} onClick={()=>setSelectedId(7)}>Upcoming</div>
             </div>
             <div  className={` ${5 === SelectedId ? "show" : "hide"} `} >
               <LastFragment  user={user}/>

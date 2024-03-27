@@ -10,17 +10,41 @@ import { UpdateBooking } from "./Component/updatebooking";
 import { Upcoming } from "./Component//BookedRoomCOmponet";
 import { Invoice } from "./Component/Invoice";
 import { User } from "./Component/Users";
+import { LastFragment } from "./Component/Fragment/LastFragemnt";
+import { OngoingFragemnt } from "./Component/Fragment/OngoingFragemnt";
+import { UpcomingFragment } from "./Component/Fragment/UpcomingFragment";
+import { RoomType } from "./Component/RoomType";
+import { Guest } from "./Component/Guest";
 export function Locations({ user }) {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" exact element={<Login />} />
+        <Route
+          path="/login"
+          exact
+          element={
+            <ProtectedRoute1>
+              <Login />
+            </ProtectedRoute1>
+          }
+        />
         <Route
           path="/"
           exact
           element={
             <ProtectedRoute>
-              <Home user={user}/>
+              <Home user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/RoomType"
+          exact
+          element={
+            <ProtectedRoute>
+              <ProtectedRoute2 data={"Roomtype"}>
+                <RoomType user={user} />
+              </ProtectedRoute2>
             </ProtectedRoute>
           }
         />
@@ -29,7 +53,9 @@ export function Locations({ user }) {
           exact
           element={
             <ProtectedRoute>
-              <NewBooking user={user}/>
+              <ProtectedRoute2 data={"booking"}>
+                <NewBooking user={user} />
+              </ProtectedRoute2>
             </ProtectedRoute>
           }
         />
@@ -38,7 +64,9 @@ export function Locations({ user }) {
           exact
           element={
             <ProtectedRoute>
-              <NewRoom user={user}/>
+              <ProtectedRoute2 data={"addRoom"}>
+                <NewRoom user={user} />
+              </ProtectedRoute2>
             </ProtectedRoute>
           }
         />
@@ -47,7 +75,7 @@ export function Locations({ user }) {
           exact
           element={
             <ProtectedRoute>
-              <RoomInvertory user={user}/>
+              <RoomInvertory user={user} />
             </ProtectedRoute>
           }
         />
@@ -56,7 +84,9 @@ export function Locations({ user }) {
           exact
           element={
             <ProtectedRoute>
-              <RoomLocked user={user}/>
+              <ProtectedRoute2 data={"lockedRoom"}>
+                <RoomLocked user={user} />
+              </ProtectedRoute2>
             </ProtectedRoute>
           }
         />
@@ -75,7 +105,34 @@ export function Locations({ user }) {
           exact
           element={
             <ProtectedRoute>
-              <UpdateBooking user={user}/>
+              <UpdateBooking user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lastbooking"
+          exact
+          element={
+            <ProtectedRoute>
+              <LastFragment user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ongoing"
+          exact
+          element={
+            <ProtectedRoute>
+              <OngoingFragemnt user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/upcoming"
+          exact
+          element={
+            <ProtectedRoute>
+              <UpcomingFragment user={user} />
             </ProtectedRoute>
           }
         />
@@ -84,7 +141,7 @@ export function Locations({ user }) {
           exact
           element={
             <ProtectedRoute>
-              <Invoice user={user}/>
+              <Invoice user={user} />
             </ProtectedRoute>
           }
         />
@@ -93,7 +150,9 @@ export function Locations({ user }) {
           exact
           element={
             <ProtectedRoute>
-              <User user={user}/>
+              <ProtectedRoute2 data={"Users"}>
+                <User user={user} />
+              </ProtectedRoute2>
             </ProtectedRoute>
           }
         />
@@ -106,5 +165,25 @@ function ProtectedRoute({ children }) {
     return children;
   } else {
     return <Navigate to="/login" />;
+  }
+}
+
+function ProtectedRoute2({ children, data }) {
+  if (
+    localStorage.getItem("user") &&
+    JSON.parse(localStorage.getItem("user"))[data]
+  ) {
+    return children;
+  } else {
+    alert("Don't Access of this");
+    return <Navigate to="/" />;
+  }
+}
+
+function ProtectedRoute1({ children }) {
+  if (!localStorage.getItem("user")) {
+    return children;
+  } else {
+    return <Navigate to="/" />;
   }
 }

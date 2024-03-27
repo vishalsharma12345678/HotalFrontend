@@ -3,22 +3,25 @@ import { Sidebark } from "./Sidebar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./addRoom.css";
-export function NewRoom({user1}) {
-  const navigate = useNavigate()
-    const user = localStorage.getItem("user");
-    const g = JSON.parse(user);
+export function NewRoom({ user1 }) {
+  const navigate = useNavigate();
+  const user = localStorage.getItem("user");
+  const g = JSON.parse(user);
   const [data, setData] = useState([]);
   async function handlerAdd(e) {
     e.preventDefault();
-    console.log(data)
+    console.log(data);
     setData({
-        ...data,
-        ['userid']: g._id
-      })
-      console.log(data);
-      const result = await axios.post("https://hotelwebsitevishal.onrender.com/room/addroom",data);
-      console.log(result)
-      navigate('/RoomInventory')
+      ...data,
+      ["userid"]: g._id,
+    });
+    console.log(data);
+    const result = await axios.post(
+      "https://hotelwebsitevishal.onrender.com/room/addroom",
+      data
+    );
+    console.log(result);
+    navigate("/RoomInventory");
   }
   const updateData = (e) => {
     setData({
@@ -28,17 +31,15 @@ export function NewRoom({user1}) {
   };
   return (
     <div style={{ display: "flex" }}>
-      <Sidebark user={user1}/>
+      <Sidebark user={user1} />
 
       <div className="rooms" style={{ position: "relative", left: "20%" }}>
         <h1>Add New Room</h1>
         <form onSubmit={handlerAdd}>
           <p>
-            <label for="">
-              Rooms No
-            </label>
+            <label for="">Rooms No</label>
             <br />
-            <input type="text" name="roomNo"onChange={updateData} />
+            <input type="text" name="roomNo" onChange={updateData} />
           </p>
           <p>
             <label>Room Type</label>
@@ -88,88 +89,88 @@ export function NewRoom({user1}) {
               <option value="USD">USD</option>
             </select>
           </p>
-            <table
-              style={{ width: "100%", borderCollapse: "collapse" }}
-              border={"1px solid black"}
-            >
-              <tr>
-                <th>BreakFast Only</th>
-                <th>Lunch Only</th>
-                <th>Dinner Only</th>
-                <th>Breakfast with Lunch</th>
-                <th>Lunch with Dinner</th>
-                <th>Dinner with BreakFast</th>
-                <th>Full board</th>
-                <th>Adult Charge</th>
-              </tr>
-              <tr>
-                <td>
-                  <input
-                    type="number"
-                    name="breakfast_price"
-                    placeholder="breakfast price"
-                    onChange={updateData}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    name="lunch_price"
-                    placeholder="Lunch price"
-                    onChange={updateData}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    name="dinner_price"
-                    placeholder="Dinner price"
-                    onChange={updateData}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    name="breakfast_lunch"
-                    placeholder="Breakfast and Lunch "
-                    onChange={updateData}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    name="lunch_dinner"
-                    placeholder="Lunch with Dinner"
-                    onChange={updateData}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    name="dinner_breakfast"
-                    placeholder="Dinner with BreakFast"
-                    onChange={updateData}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    name="full_board"
-                    placeholder="Full board"
-                    onChange={updateData}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    name="adult_charge"
-                    placeholder="Adult Charge"
-                    onChange={updateData}
-                  />
-                </td>
-              </tr>
-            </table>
-          
+          <table
+            style={{ width: "100%", borderCollapse: "collapse" }}
+            border={"1px solid black"}
+          >
+            <tr>
+              <th>BreakFast Only</th>
+              <th>Lunch Only</th>
+              <th>Dinner Only</th>
+              <th>Breakfast with Lunch</th>
+              <th>Lunch with Dinner</th>
+              <th>Dinner with BreakFast</th>
+              <th>Full board</th>
+              <th>Adult Charge</th>
+            </tr>
+            <tr>
+              <td>
+                <input
+                  type="number"
+                  name="breakfast_price"
+                  placeholder="breakfast price"
+                  onChange={updateData}
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="lunch_price"
+                  placeholder="Lunch price"
+                  onChange={updateData}
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="dinner_price"
+                  placeholder="Dinner price"
+                  onChange={updateData}
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="breakfast_lunch"
+                  placeholder="Breakfast and Lunch "
+                  onChange={updateData}
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="lunch_dinner"
+                  placeholder="Lunch with Dinner"
+                  onChange={updateData}
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="dinner_breakfast"
+                  placeholder="Dinner with BreakFast"
+                  onChange={updateData}
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="full_board"
+                  placeholder="Full board"
+                  onChange={updateData}
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="adult_charge"
+                  placeholder="Adult Charge"
+                  onChange={updateData}
+                />
+              </td>
+            </tr>
+          </table>
+
           <div>
             <button>Submit</button>
           </div>

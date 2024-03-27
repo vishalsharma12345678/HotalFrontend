@@ -4,8 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
-
-export function RoomInvertory({user}) {
+export function RoomInvertory({ user }) {
   const [rooms, setRooms] = useState([]);
   const [isFetching, setFetching] = useState(false);
   async function lockroom(id) {
@@ -20,13 +19,17 @@ export function RoomInvertory({user}) {
   async function DeleteRoom(id) {
     // setFetching(true);
     // console.log(id)
-    await axios.get(`https://hotelwebsitevishal.onrender.com/room/delete/${id}`);
+    await axios.get(
+      `https://hotelwebsitevishal.onrender.com/room/delete/${id}`
+    );
     fetchData();
     // setFetching(false);
   }
   async function fetchData() {
     setFetching(true);
-    let roomsdata = await fetch("https://hotelwebsitevishal.onrender.com/room/getallrooms");
+    let roomsdata = await fetch(
+      "https://hotelwebsitevishal.onrender.com/room/getallrooms"
+    );
     let data = await roomsdata.json();
     setRooms((s) => data);
     setFetching(false);
@@ -36,7 +39,7 @@ export function RoomInvertory({user}) {
   }, []);
   return (
     <div style={{ display: "flex" }}>
-      <Sidebark user={user}/>
+      <Sidebark user={user} />
 
       <div className="rooms inv" style={{ position: "relative", left: "20%" }}>
         <h1>Rooms Inventory</h1>

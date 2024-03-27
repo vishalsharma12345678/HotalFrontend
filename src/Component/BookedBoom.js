@@ -1,6 +1,6 @@
 import { Sidebark } from "./Sidebar";
 import "./bookingRoom.css";
-import {updateBooking} from "./updatebooking"
+import { updateBooking } from "./updatebooking";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
@@ -26,7 +26,7 @@ export function Booking({ user }) {
     // setFetching(true);
     const ids = {
       bookingid: id,
-      value:e.target.value
+      value: e.target.value,
     };
     // console.log(ids)
     let roomsdata = await axios.post(
@@ -39,13 +39,17 @@ export function Booking({ user }) {
   }
   async function DeleteRoom(id) {
     // setFetching(true);
-    await axios.get(`https://hotelwebsitevishal.onrender.com/book/deletebooking/${id}`);
+    await axios.get(
+      `https://hotelwebsitevishal.onrender.com/book/deletebooking/${id}`
+    );
     fetchData();
     // setFetching(false);
   }
   async function fetchData() {
     setFetching(true);
-    let roomsdata = await fetch("https://hotelwebsitevishal.onrender.com/book/allBookings");
+    let roomsdata = await fetch(
+      "https://hotelwebsitevishal.onrender.com/book/allBookings"
+    );
     let data = await roomsdata.json();
     console.log(data);
     setRooms((s) => data);
@@ -101,20 +105,35 @@ export function Booking({ user }) {
 
                     <td>{room.remark}</td>
                     <td>
-                    <select
+                      <select
                         name="status"
-                        disabled={room.check_in_check_out === "Checkedout" || room.status !== "booked" ? true : false}
-                        onChange={(e) =>
-                          handleEdit1(e, room._id)
+                        disabled={
+                          room.check_in_check_out === "Checkedout" ||
+                          room.status !== "booked"
+                            ? true
+                            : false
                         }
+                        onChange={(e) => handleEdit1(e, room._id)}
                       >
-                        <option value="Checkedin" selected={room.check_in_check_out === "Checkedin"}>
-                        CheckedIn
+                        <option
+                          value="Checkedin"
+                          selected={room.check_in_check_out === "Checkedin"}
+                        >
+                          CheckedIn
                         </option>
-                        <option value="Checkedout" selected={room.check_in_check_out === "Checkedout"}>
+                        <option
+                          value="Checkedout"
+                          selected={room.check_in_check_out === "Checkedout"}
+                        >
                           CheckedOut
                         </option>
-                        <option value="waiting to checkin" disabled selected={room.check_in_check_out === "waiting to checkin"}>
+                        <option
+                          value="waiting to checkin"
+                          disabled
+                          selected={
+                            room.check_in_check_out === "waiting to checkin"
+                          }
+                        >
                           Waiting to checkIn
                         </option>
                       </select>
@@ -122,7 +141,13 @@ export function Booking({ user }) {
                     <td>
                       <select
                         name="status"
-                        disabled={room.status !== "booked" ||  room.check_in_check_out === "Checkedin" || room.check_in_check_out === "Checkedout" ? true : false}
+                        disabled={
+                          room.status !== "booked" ||
+                          room.check_in_check_out === "Checkedin" ||
+                          room.check_in_check_out === "Checkedout"
+                            ? true
+                            : false
+                        }
                         onChange={(e) =>
                           handleEdit(e, room._id, room.currentbooking)
                         }
@@ -137,9 +162,26 @@ export function Booking({ user }) {
                     </td>
                     <td>{room.createdAt}</td>
                     <td>
-                    <NavLink to={`/EditRoom/${room._id}`}>
-                        <button disabled={( room.check_in_check_out === "Checkedout" || room.status !== "booked")?true:false} style={{cursor:`${room.status !== "booked" || room.check_in_check_out === "Checkedout"?"not-allowed":""}`}}>Edit</button>
-                    </NavLink>
+                      <NavLink to={`/EditRoom/${room._id}`}>
+                        <button
+                          disabled={
+                            room.check_in_check_out === "Checkedout" ||
+                            room.status !== "booked"
+                              ? true
+                              : false
+                          }
+                          style={{
+                            cursor: `${
+                              room.status !== "booked" ||
+                              room.check_in_check_out === "Checkedout"
+                                ? "not-allowed"
+                                : ""
+                            }`,
+                          }}
+                        >
+                          Edit
+                        </button>
+                      </NavLink>
                       {user.isAdmin ? (
                         <button onClick={() => DeleteRoom(room._id)}>
                           Delete
