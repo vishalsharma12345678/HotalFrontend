@@ -16,24 +16,26 @@ export function User({ user }) {
       value: e.target.value,
     };
     await axios.post(
-      "https://hotelwebsitevishal.onrender.com/user/update",
+      "https://walrus-app-4kyov.ondigitalocean.app/user/update",
       ids
     );
     console.log(ids);
   }
   async function fetch1() {
-    let data = await axios.get("https://hotelwebsitevishal.onrender.com/user/");
+    let data = await axios.get(
+      "https://walrus-app-4kyov.ondigitalocean.app/user/"
+    );
     setUsers(data.data);
   }
   async function Delete(id) {
     await axios.get(
-      `https://hotelwebsitevishal.onrender.com/user/deleteUser/${id}`
+      `https://walrus-app-4kyov.ondigitalocean.app/user/deleteUser/${id}`
     );
     fetch1();
   }
   async function updateUser() {
     let data = await axios.post(
-      "https://hotelwebsitevishal.onrender.com/updatedetails"
+      "https://walrus-app-4kyov.ondigitalocean.app/updatedetails"
     );
     setUsers(data.data);
   }
@@ -52,54 +54,76 @@ export function User({ user }) {
         <Sidebark user={user} />
 
         <div
-          className="rooms inv"
-          style={{ position: "relative", left: "20%" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            position: "relative",
+            left: "20%",
+            width: "80%",
+          }}
         >
-          <button style={{ textAlign: "end" }} onClick={() => setopen(!open)}>
-            Add User
-          </button>
-          <table width="100%">
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Username</th>
-              <th>mobileNumber</th>
-              <th>address</th>
-              <td>Admin</td>
-              <th>Action</th>
-            </tr>
-            {Users.map((user, i) => {
-              return (
-                <tr>
-                  <td>{i}</td>
-                  <td>{user.name}</td>
-                  <td>{user.username}</td>
-                  <td>{user.mobileNumber}</td>
-                  <td>{user.address}</td>
-                  <td>
-                    <select
-                      name="isAdmin"
-                      id=""
-                      onChange={(e) => update(e, user._id)}
-                    >
-                      <option selected={user.isAdmin} value={true}>
-                        Admin
-                      </option>
-                      <option selected={!user.isAdmin} value={false}>
-                        Maneger
-                      </option>
-                    </select>
-                  </td>
-                  <td>
-                    <button onClick={() => (setUser(user), setopen1(true))}>
-                      Edit
-                    </button>
-                    <button onClick={() => Delete(user._id)}>Delete</button>
-                  </td>
-                </tr>
-              );
-            })}
-          </table>
+          <div
+            className="rooms inv"
+            style={{ position: "relative", width: "100%" }}
+          >
+            <button style={{ textAlign: "end" }} onClick={() => setopen(!open)}>
+              Add User
+            </button>
+            <table width="100%">
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Username</th>
+                <th>mobileNumber</th>
+                <th>address</th>
+                <td>Admin</td>
+                <th>Action</th>
+              </tr>
+              {Users.map((user, i) => {
+                return (
+                  <tr>
+                    <td>{i}</td>
+                    <td>{user.name}</td>
+                    <td>{user.username}</td>
+                    <td>{user.mobileNumber}</td>
+                    <td>{user.address}</td>
+                    <td>
+                      <select
+                        name="isAdmin"
+                        id=""
+                        onChange={(e) => update(e, user._id)}
+                      >
+                        <option
+                          selected={user.isAdmin === "Admin"}
+                          value={"Admin"}
+                        >
+                          Admin
+                        </option>
+                        <option
+                          selected={user.isAdmin === "Maneger"}
+                          value={"Maneger"}
+                        >
+                          Maneger
+                        </option>
+                        <option
+                          selected={user.isAdmin === "Reception"}
+                          value={"Reception"}
+                        >
+                          Reception
+                        </option>
+                      </select>
+                    </td>
+                    <td>
+                      <button onClick={() => (setUser(user), setopen1(true))}>
+                        Edit
+                      </button>
+                      <button onClick={() => Delete(user._id)}>Delete</button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </table>
+          </div>
         </div>
       </div>
     </>
@@ -142,7 +166,7 @@ export function AddUser({ fetch1, open }) {
       Users: Users,
     };
     await axios
-      .post("https://hotelwebsitevishal.onrender.com/user/createUser", data)
+      .post("https://walrus-app-4kyov.ondigitalocean.app/user/createUser", data)
       .then((result) => {
         open(false);
         fetch1();
@@ -244,11 +268,13 @@ export function AddUser({ fetch1, open }) {
         <select
           style={style}
           name="isAdmin"
-          defaultChecked={isAdmin}
           onChange={(e) => setIsAdmin(e.target.value)}
         >
-          <option value={true}>Admin</option>
-          <option value={false}>Maneger</option>
+          <option value={"Admin"}>Admin</option>
+          <option selected value={"Maneger"}>
+            Maneger
+          </option>
+          <option value={"Reception"}>Reception</option>
         </select>
         <br />
         <div style={{ display: "flex" }}>
@@ -363,7 +389,10 @@ export function UpdateUser({ fetch1, open, user }) {
       Users: Users,
     };
     await axios
-      .post("https://hotelwebsitevishal.onrender.com/user/updatedetails", data)
+      .post(
+        "https://walrus-app-4kyov.ondigitalocean.app/user/updatedetails",
+        data
+      )
       .then((result) => {
         open(false);
         fetch1();
@@ -465,11 +494,17 @@ export function UpdateUser({ fetch1, open, user }) {
         <select
           style={style}
           name="isAdmin"
-          defaultChecked={isAdmin}
           onChange={(e) => setIsAdmin(e.target.value)}
         >
-          <option value={true}>Admin</option>
-          <option value={false}>Maneger</option>
+          <option selected={user.isAdmin === "Admin"} value={"Admin"}>
+            Admin
+          </option>
+          <option selected={user.isAdmin === "Maneger"} value={"Maneger"}>
+            Maneger
+          </option>
+          <option selected={user.isAdmin === "Reception"} value={"Reception"}>
+            Reception
+          </option>
         </select>
         <br />
         <div style={{ display: "flex" }}>

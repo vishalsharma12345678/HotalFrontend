@@ -9,7 +9,7 @@ export function RoomLocked({ user }) {
     console.log(id);
     // setFetching(true);
     let roomsdata = await axios.get(
-      `https://hotelwebsitevishal.onrender.com/room/unlockRoom/${id}`
+      `https://walrus-app-4kyov.ondigitalocean.app/room/unlockRoom/${id}`
     );
     fetchData();
     // setFetching(false);
@@ -17,7 +17,7 @@ export function RoomLocked({ user }) {
   async function fetchData() {
     setFetching(true);
     let roomsdata = await fetch(
-      "https://hotelwebsitevishal.onrender.com/room/lockRoom"
+      "https://walrus-app-4kyov.ondigitalocean.app/room/lockRoom"
     );
     let data = await roomsdata.json();
     setRooms((s) => data);
@@ -29,46 +29,59 @@ export function RoomLocked({ user }) {
   return (
     <div style={{ display: "flex" }}>
       <Sidebark user={user} />
-      <div className="rooms inv" style={{ position: "relative", left: "20%" }}>
-        <h1>Rooms Inventory</h1>
-        <table style={{ width: "100%" }}>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Rooms</th>
-              <th>Rooms_type</th>
-              <th>Rooms_Ameneties</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isFetching ? null : rooms.length === 0 ? (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          position: "relative",
+          left: "20%",
+          width: "80%",
+        }}
+      >
+        <div
+          className="rooms inv"
+          style={{ position: "relative", width: "100%" }}
+        >
+          <h1>Rooms Locked</h1>
+          <table style={{ width: "100%" }}>
+            <thead>
               <tr>
-                <td colSpan="5" style={{ textAlign: "center" }}>
-                  No Rooms are Locked.
-                </td>
+                <th>#</th>
+                <th>Rooms</th>
+                <th>Rooms_type</th>
+                <th>Rooms_Ameneties</th>
+                <th>Action</th>
               </tr>
-            ) : (
-              Array.from(rooms).map((room, index) => {
-                return (
-                  <tr key={room._id}>
-                    <td>{index + 1}</td>
-                    <td>{room.roomNo}</td>
-                    <td>{room.roomType}</td>
-                    <td>{room.Room_amneities}</td>
-                    <td>
-                      {room.Room_Status === "Locked" ? (
-                        <button onClick={() => lockroom(room._id)}>
-                          Unlock
-                        </button>
-                      ) : null}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {isFetching ? null : rooms.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
+                    No Rooms are Locked.
+                  </td>
+                </tr>
+              ) : (
+                Array.from(rooms).map((room, index) => {
+                  return (
+                    <tr key={room._id}>
+                      <td>{index + 1}</td>
+                      <td>{room.roomNo}</td>
+                      <td>{room.roomType}</td>
+                      <td>{room.Room_amneities}</td>
+                      <td>
+                        {room.Room_Status === "Locked" ? (
+                          <button onClick={() => lockroom(room._id)}>
+                            Unlock
+                          </button>
+                        ) : null}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

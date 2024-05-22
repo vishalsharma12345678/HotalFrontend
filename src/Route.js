@@ -15,6 +15,8 @@ import { OngoingFragemnt } from "./Component/Fragment/OngoingFragemnt";
 import { UpcomingFragment } from "./Component/Fragment/UpcomingFragment";
 import { RoomType } from "./Component/RoomType";
 import { Guest } from "./Component/Guest";
+import { Test } from "./Component/Fragment/Test";
+import { OnHold } from "./Component/OnHold";
 export function Locations({ user }) {
   return (
     <BrowserRouter>
@@ -128,6 +130,15 @@ export function Locations({ user }) {
           }
         />
         <Route
+          path="/onholdsbills"
+          exact
+          element={
+            <ProtectedRoute>
+              <OnHold user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/upcoming"
           exact
           element={
@@ -146,6 +157,15 @@ export function Locations({ user }) {
           }
         />
         <Route
+          path="/test"
+          exact
+          element={
+            <ProtectedRoute>
+              <Test user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/userdata"
           exact
           element={
@@ -156,6 +176,7 @@ export function Locations({ user }) {
             </ProtectedRoute>
           }
         />
+        <Route path="/guest" exact element={<Guest user={user} />} />
       </Routes>
     </BrowserRouter>
   );

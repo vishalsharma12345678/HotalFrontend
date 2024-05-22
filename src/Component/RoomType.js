@@ -7,9 +7,16 @@ export function RoomType({ user }) {
   const [open, setopen] = useState(false);
   async function fetch1() {
     const res = await axios.get(
-      "https://hotelwebsitevishal.onrender.com/Roomtype"
+      "https://walrus-app-4kyov.ondigitalocean.app/Roomtype"
     );
     setRoomType(res.data);
+  }
+  async function Delete(id) {
+    console.log(id);
+    await axios.get(
+      `https://walrus-app-4kyov.ondigitalocean.app/deleteRoomtype/${id}`
+    );
+    fetch1();
   }
   useEffect(() => {
     fetch1();
@@ -17,41 +24,68 @@ export function RoomType({ user }) {
 
   return (
     <>
-      {open && <RoomTypeg open={setopen} />}
+      {open && <RoomTypeg open={setopen} fetch1={fetch1} />}
       <div style={{ display: "flex" }}>
         <Sidebark user={user} />
         <div
-          className="rooms book"
-          style={{ position: "relative", left: "20%" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            position: "relative",
+            left: "20%",
+            width: "80%",
+          }}
         >
-          <h1>Room Types</h1>
-          <button style={{ textAlign: "end" }} onClick={(e) => setopen(true)}>
-            Add Room Type
-          </button>
-          <table width={"100%"}>
-            <thead>
-              <tr>
-                <th>SNo..</th>
-                <th>Room Type.</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from(RoomType).map((i, index) => {
-                return (
-                  <tr>
-                    <td>{index}</td>
-                    <td>{i.name}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div
+            className="rooms book"
+            style={{ position: "relative", width: "100%" }}
+          >
+            <h1>Room Types</h1>
+            <button style={{ textAlign: "end" }} onClick={(e) => setopen(true)}>
+              Add Room Type
+            </button>
+            <table width={"100%"}>
+              <thead>
+                <tr>
+                  <th>SNo..</th>
+                  <th>Room Type.</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from(RoomType).map((i, index) => {
+                  return (
+                    <tr>
+                      <td style={{ fontSize: "15px" }}>{index + 1}</td>
+                      <td style={{ fontSize: "15px" }}>{i.name}</td>
+                      <td>
+                        <div
+                          onClick={(e) => {
+                            Delete(i._id);
+                          }}
+                        >
+                          <i
+                            class="fa-solid fa-trash-can fa-flip-horizontal"
+                            style={{
+                              color: "black",
+                              fontSize: "15px",
+                              cursor: "pointer",
+                            }}
+                          ></i>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </>
   );
 }
-export function RoomTypeg({ open }) {
+export function RoomTypeg({ open, fetch1 }) {
   let style = {
     border: "2px solid white",
     borderRadius: "5px",
@@ -63,11 +97,12 @@ export function RoomTypeg({ open }) {
     e.preventDefault();
 
     await axios
-      .post("https://hotelwebsitevishal.onrender.com/addRoomtype", {
+      .post("https://walrus-app-4kyov.ondigitalocean.app/addRoomtype", {
         data: data,
       })
       .then((result) => {
         open(false);
+        fetch1();
       });
   }
   return (

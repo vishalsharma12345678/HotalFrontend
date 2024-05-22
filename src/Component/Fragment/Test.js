@@ -13,7 +13,7 @@ import ToolkitProvider, {
   Search,
 } from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
 import "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css";
-export function OngoingFragemnt({ user }) {
+export function Test({ user }) {
   const { ExportCSVButton } = CSVExport;
   const { SearchBar } = Search;
   const MyExportCSV = (props) => {
@@ -57,7 +57,7 @@ export function OngoingFragemnt({ user }) {
                 ? true
                 : false
             }
-            onChange={(e) => handleEdit1(e, row._id, row.payment_type)}
+            onChange={(e) => handleEdit1(e, row._id)}
           >
             <option
               value="Checkedin"
@@ -138,7 +138,7 @@ export function OngoingFragemnt({ user }) {
                 Edit
               </button>
             </NavLink>
-            {user.isAdmin === "Admin" ? (
+            {user.isAdmin ? (
               <button onClick={() => DeleteRoom(row._id)}>Delete</button>
             ) : (
               ""
@@ -177,50 +177,38 @@ export function OngoingFragemnt({ user }) {
     };
     // console.log(ids)
     let roomsdata = await axios.post(
-      `https://walrus-app-4kyov.ondigitalocean.app/book/updateBooking`,
+      `http://localhost:4000/book/updateBooking`,
       ids
     );
     fetchData();
 
     // setFetching(false);
   }
-  async function handleEdit1(e, id, payment_type) {
+  async function handleEdit1(e, id) {
     // setFetching(true);
     const ids = {
       bookingid: id,
       value: e.target.value,
     };
-    console.log(payment_type);
-    if (payment_type === "onhold") {
-      console.log("first");
-      let roomsdata = await axios.post(
-        `https://walrus-app-4kyov.ondigitalocean.app/book/updateBookingEntryhold`,
-        ids
-      );
-    } else {
-      let roomsdata = await axios.post(
-        `https://walrus-app-4kyov.ondigitalocean.app/book/updateBookingEntry`,
-        ids
-      );
-    }
+    // console.log(ids)
+    let roomsdata = await axios.post(
+      `http://localhost:4000/book/updateBookingEntry`,
+      ids
+    );
     fetchData();
 
     // setFetching(false);
   }
   async function DeleteRoom(id) {
     // setFetching(true);
-    await axios.get(
-      `https://walrus-app-4kyov.ondigitalocean.app/book/deletebooking/${id}`
-    );
+    await axios.get(`http://localhost:4000/book/deletebooking/${id}`);
     fetchData();
     // setFetching(false);
   }
 
   async function fetchData() {
     setFetching(true);
-    let roomsdata = await fetch(
-      "https://walrus-app-4kyov.ondigitalocean.app/book/allBookings"
-    );
+    let roomsdata = await fetch("http://localhost:4000/book/allBookings");
     let data = await roomsdata.json();
     console.log(data);
     setRooms((s) => data.booking);

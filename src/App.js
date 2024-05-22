@@ -47,11 +47,19 @@ export default function App() {
           border: "2px solid black",
         }}
       >
-        <h1 style={{ alignSelf: "left",fontFamily:'Dancing Script, cursive',fontSize:'2.5rem'}}>OFF DAYS INN</h1>
-        <div style={{display:'flex',alignItems:'center',gap:'20px'}}>
+        <h1
+          style={{
+            alignSelf: "left",
+            fontFamily: "Dancing Script, cursive",
+            fontSize: "2.5rem",
+          }}
+        >
+          OFF DAYS INN
+        </h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
           <FontAwesomeIcon icon={faBell} style={{ color: "#ffffff" }} />
           <div className="dropdown">
-            <button onClick={handleOpen}>
+            <button style={{ borderRadius: "10px" }} onClick={handleOpen}>
               <FontAwesomeIcon icon={faPowerOff} style={{ color: "#ffffff" }} />
             </button>
             {open ? (

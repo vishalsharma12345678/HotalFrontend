@@ -15,7 +15,7 @@ export function Login() {
       password: password,
     };
     const curUser = await axios.post(
-      "https://hotelwebsitevishal.onrender.com/login/getlogin",
+      "https://walrus-app-4kyov.ondigitalocean.app/login/getlogin",
       user
     );
     console.log(curUser.data);

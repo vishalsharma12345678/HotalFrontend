@@ -4,10 +4,162 @@ import axios from "axios";
 import { Sidebark } from "../Sidebar";
 import "../upcoming.css";
 import moment from "moment";
+import BootstrapTable from "react-bootstrap-table-next";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "react-bootstrap-table-next/dist/react-bootstrap-table2.css";
+import paginationFactory from "react-bootstrap-table2-paginator";
+import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
+import filterFactory, { textFilter } from "react-bootstrap-table2-filter";
+import ToolkitProvider, {
+  CSVExport,
+  Search,
+} from "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit";
+import "react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css";
 import { DatePicker, Space } from "antd";
 const { RangePicker } = DatePicker;
 
 export function LastFragment({ user }) {
+  const { ExportCSVButton } = CSVExport;
+  const { SearchBar } = Search;
+  const MyExportCSV = (props) => {
+    const handleClick = () => {
+      props.onExport();
+    };
+    return (
+      <div>
+        <button className="btn btn-success" onClick={handleClick}>
+          CSV
+        </button>
+      </div>
+    );
+  };
+
+  const column = [
+    {
+      dataField: "_id",
+      text: "_id",
+    },
+    {
+      dataField: "full_name",
+      text: "full_name",
+      sort: true,
+      filter: textFilter(),
+    },
+    { dataField: "registrationNo", text: "Reg No.", filter: textFilter() },
+    { dataField: "check_in", text: "Checked In" },
+    { dataField: "check_out", text: "Expected CheckOut" },
+    { dataField: "verifiedby", text: "Verfied By", filter: textFilter() },
+    { dataField: "remark", text: "Remark", filter: textFilter() },
+    {
+      dataField: "databasePkey",
+      text: "Entry Status",
+      formatter: (cellContent, row) => {
+        return (
+          <select
+            name="status"
+            disabled={
+              row.check_in_check_out === "Checkedout" || row.status !== "booked"
+                ? true
+                : false
+            }
+            onChange={(e) => handleEdit1(e, row._id, row.payment_type)}
+          >
+            <option
+              value="Checkedin"
+              selected={row.check_in_check_out === "Checkedin"}
+            >
+              CheckedIn
+            </option>
+            <option
+              value="Checkedout"
+              selected={row.check_in_check_out === "Checkedout"}
+            >
+              CheckedOut
+            </option>
+            <option
+              value="waiting to checkin"
+              disabled
+              selected={row.check_in_check_out === "waiting to checkin"}
+            >
+              Waiting to checkIn
+            </option>
+          </select>
+        );
+      },
+    },
+    {
+      dataField: "statu",
+      text: "Booking Status",
+      formatter: (cellContent, row) => {
+        return (
+          <select
+            name="status"
+            disabled={
+              row.status !== "booked" ||
+              row.check_in_check_out === "Checkedin" ||
+              row.check_in_check_out === "Checkedout"
+                ? true
+                : false
+            }
+            onChange={(e) => handleEdit(e, row._id, row.currentbooking)}
+          >
+            <option value="" selected={row.status === "booked"}>
+              Booked
+            </option>
+            <option value="" selected={row.status !== "booked"}>
+              Canceled
+            </option>
+          </select>
+        );
+      },
+    },
+    {
+      dataField: "createdAt",
+      text: "Created At",
+    },
+    {
+      dataField: "#",
+      text: "Actions",
+      formatter: (cellContent, row) => {
+        return (
+          <>
+            <NavLink to={`/EditRoom/${row._id}`}>
+              <button
+                disabled={row.status !== "booked" ? true : false}
+                style={{ cursor: `${row.status !== "booked"}` }}
+              >
+                Edit
+              </button>
+            </NavLink>
+            {user.isAdmin === "Admin" ? (
+              <button onClick={() => DeleteRoom(row._id)}>Delete</button>
+            ) : (
+              ""
+            )}
+          </>
+        );
+      },
+    },
+  ];
+
+  const pagination = paginationFactory({
+    page: 1,
+    sizePerPage: 5,
+    lastPageText: ">>",
+    firstPageText: "<<",
+    nextPageText: ">",
+    prePageText: "<",
+    showTotal: true,
+    alwaysShowAllBtns: true,
+    onPageChange: function (page, sizePerPage) {
+      console.log("page", page);
+      console.log("sizePerPage", sizePerPage);
+    },
+    onSizePerPageChange: function (page, sizePerPage) {
+      console.log("page", page);
+      console.log("sizePerPage", sizePerPage);
+    },
+  });
   const [rooms, setRooms] = useState([]);
   const [isFetching, setFetching] = useState(false);
 
@@ -18,41 +170,44 @@ export function LastFragment({ user }) {
       roomsid: currentbookingid,
     };
     let roomsdata = await axios.post(
-      `https://hotelwebsitevishal.onrender.com/book/updateBooking`,
+      `https://walrus-app-4kyov.ondigitalocean.app/book/updateBooking`,
       ids
     );
     fetchData();
 
     // setFetching(false);
   }
-  async function handleEdit1(e, id) {
+  async function handleEdit1(e, id, payment_type) {
     // setFetching(true);
     const ids = {
       bookingid: id,
       value: e.target.value,
     };
-    // console.log(ids)
-    let roomsdata = await axios.post(
-      `https://hotelwebsitevishal.onrender.com/book/updateBookingEntry`,
-      ids
-    );
+    if (payment_type === "onhold") {
+      console.log("first");
+      let roomsdata = await axios.post(
+        `https://walrus-app-4kyov.ondigitalocean.app/book/updateBookingEntryhold`,
+        ids
+      );
+    } else {
+      let roomsdata = await axios.post(
+        `https://walrus-app-4kyov.ondigitalocean.app/book/updateBookingEntry`,
+        ids
+      );
+    }
     fetchData();
 
     // setFetching(false);
   }
   async function DeleteRoom(id) {
     // setFetching(true);
-    await axios.get(
-      `https://hotelwebsitevishal.onrender.com/book/deletebooking/${id}`
-    );
+    await axios.get(`https://walrus-app-4kyov.ondigitalocean.app/book/deletebooking/${id}`);
     fetchData();
     // setFetching(false);
   }
   async function fetchData() {
     setFetching(true);
-    let roomsdata = await fetch(
-      "https://hotelwebsitevishal.onrender.com/book/allBookings"
-    );
+    let roomsdata = await fetch("https://walrus-app-4kyov.ondigitalocean.app/book/allBookings");
     let data = await roomsdata.json();
     console.log(data);
     setRooms((s) => data.Lastbooking);
@@ -65,7 +220,7 @@ export function LastFragment({ user }) {
   async function filterByDate(dates) {
     if (dates) {
       let rooms = await axios.post(
-        "https://hotelwebsitevishal.onrender.com/book/allBookingswithdate",
+        "https://walrus-app-4kyov.ondigitalocean.app/book/allBookingswithdate",
         {
           check_in: dates[0],
           check_out: dates[1],
@@ -83,7 +238,10 @@ export function LastFragment({ user }) {
   return (
     <div style={{ display: "flex" }}>
       <Sidebark user={user} />
-      <div className="rooms book" style={{ position: "relative", left: "20%" }}>
+      <div
+        className="rooms1 book1"
+        style={{ position: "relative", left: "20%" }}
+      >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h1>Room Booking Status</h1>
           <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
@@ -95,128 +253,24 @@ export function LastFragment({ user }) {
             />
           </div>
         </div>
-
-        <table style={{ width: "100%" }}>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Rooms No</th>
-              <th>Guest Name</th>
-              <th>Reg No.</th>
-              <th>Checked In</th>
-              <th>Expected CheckOut</th>
-              <th>Verfied By</th>
-              <th>Remark</th>
-              <th>payment status</th>
-              <th>Entry Status</th>
-              <th>Booking Status</th>
-              <th>Created Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isFetching ? null : rooms.length === 0 ? (
-              <tr>
-                <td colSpan="12" style={{ textAlign: "center" }}>
-                  No Booking Found in logs
-                  <Link to="/newbooking">
-                    <button>Add Booking</button>
-                  </Link>
-                </td>
-              </tr>
-            ) : (
-              Array.from(rooms).map((room, index) => {
-                return (
-                  <tr key={room._id}>
-                    <td>{index + 1}</td>
-                    <td>{room.roomNo}</td>
-                    <td>{room.full_name}</td>
-                    <td>{room.registrationNo}</td>
-                    <td>{room.check_in}</td>
-                    <td>{room.check_out}</td>
-                    <td>{room.verifiedby}</td>
-                    <td>{room.payment_type}</td>
-                    <td>{room.remark}</td>
-                    <td>
-                      <select
-                        name="status"
-                        disabled={
-                          room.check_in_check_out === "Checkedout" ||
-                          room.status !== "booked"
-                            ? true
-                            : false
-                        }
-                        onChange={(e) => handleEdit1(e, room._id)}
-                      >
-                        <option
-                          value="Checkedin"
-                          selected={room.check_in_check_out === "Checkedin"}
-                        >
-                          CheckedIn
-                        </option>
-                        <option
-                          value="Checkedout"
-                          selected={room.check_in_check_out === "Checkedout"}
-                        >
-                          CheckedOut
-                        </option>
-                        <option
-                          value="waiting to checkin"
-                          disabled
-                          selected={
-                            room.check_in_check_out === "waiting to checkin"
-                          }
-                        >
-                          Waiting to checkIn
-                        </option>
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        name="status"
-                        disabled={
-                          room.status !== "booked" ||
-                          room.check_in_check_out === "Checkedin" ||
-                          room.check_in_check_out === "Checkedout"
-                            ? true
-                            : false
-                        }
-                        onChange={(e) =>
-                          handleEdit(e, room._id, room.currentbooking)
-                        }
-                      >
-                        <option value="" selected={room.status === "booked"}>
-                          Booked
-                        </option>
-                        <option value="" selected={room.status !== "booked"}>
-                          Canceled
-                        </option>
-                      </select>
-                    </td>
-                    <td>{room.createdAt}</td>
-                    <td>
-                      <NavLink to={`/EditRoom/${room._id}`}>
-                        <button
-                          disabled={room.status !== "booked" ? true : false}
-                          style={{ cursor: `${room.status !== "booked"}` }}
-                        >
-                          Edit
-                        </button>
-                      </NavLink>
-                      {user.isAdmin ? (
-                        <button onClick={() => DeleteRoom(room._id)}>
-                          Delete
-                        </button>
-                      ) : (
-                        ""
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+        <ToolkitProvider
+          bootstrap4
+          keyField="_id"
+          columns={column}
+          data={rooms}
+          exportCSV
+        >
+          {(props) => (
+            <>
+              <MyExportCSV {...props.csvProps} />
+              <BootstrapTable
+                pagination={pagination}
+                filter={filterFactory()}
+                {...props.baseProps}
+              />
+            </>
+          )}
+        </ToolkitProvider>
       </div>
     </div>
   );

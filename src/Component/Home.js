@@ -11,10 +11,17 @@ export function Home({ user }) {
   var CanvasJS = CanvasJSReact.CanvasJS;
   var CanvasJSChart = CanvasJSReact.CanvasJSChart;
   const [alldata, setAlldata] = useState({});
+  const [details, setdetails] = useState({});
   async function fetchdata() {
-    let data = await axios.get(
-      `https://hotelwebsitevishal.onrender.com/room/roomsDetails`
+    console.log("first");
+    let taxdata = await axios.get(
+      `https://walrus-app-4kyov.ondigitalocean.app/Company/details/find`
     );
+
+    let data = await axios.get(
+      `https://walrus-app-4kyov.ondigitalocean.app/room/roomsDetails`
+    );
+    setdetails(taxdata.data);
     let newdata = {
       emptyData: data.data.EmptyRooms,
       OccupiedRoom: data.data.OccupiedRoom,
@@ -37,10 +44,12 @@ export function Home({ user }) {
         style={{
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          position: "relative",
+          left: "20%",
+          width: "80%",
         }}
       >
-        <div className="d-flex" style={{ padding: "2rem" }}>
+        <div className="d-flex" style={{ padding: "2rem", width: "100%" }}>
           <Block>
             <h1>{alldata.emptyData}</h1>
             <p>Empty Rooms</p>
@@ -88,7 +97,9 @@ export function Home({ user }) {
           />
         </div>
         <div>
-          <Tax />
+          {details[0] ? (
+            <Tax Tgst={details[0]["Tgst_Tax"]} Tax={details[0]["Tax"]} />
+          ) : null}
         </div>
       </div>
     </div>
@@ -102,15 +113,35 @@ function Block({ children }) {
   );
 }
 
-export function Tax() {
-  const [value, setValue] = useState("");
+export function Tax({ Tgst, Tax }) {
+  const [tgst, setTgst] = useState(Tgst);
+  const [tax, setTax] = useState(Tax);
+  function handleClick() {
+    const last = axios.post(
+      "https://walrus-app-4kyov.ondigitalocean.app/Company/details/find",
+      {
+        Tgst_Tax: tgst,
+        Tax: tax,
+      }
+    );
+  }
   return (
     <>
       <h1>UPDATE TAX DETAILS</h1>
       <div style={{ display: "flex", gap: "10px", marginTop: "40px" }}>
-        <TextArea placeholder="TGST" autoSize />
-        <TextArea placeholder="Green Tax" autoSize />
-        <button>Update</button>
+        <TextArea
+          placeholder="TGST"
+          value={tgst}
+          onChange={(e) => setTgst(+e.target.value)}
+          autoSize
+        />
+        <TextArea
+          placeholder="Green Tax"
+          onChange={(e) => setTax(+e.target.value)}
+          value={tax}
+          autoSize
+        />
+        <button onClick={handleClick}>Update</button>
       </div>
     </>
   );
